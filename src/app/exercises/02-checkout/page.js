@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import DATA from './data';
 import reducer from './reducer';
@@ -10,8 +10,25 @@ import './styles.css';
 function CheckoutExercise() {
   const [items, dispatch] = React.useReducer(
     reducer,
-    []
+    null
   );
+
+  useEffect(() => { // side effect: create initial state
+    const savedItems = window.localStorage.getItem('cart-items');
+    dispatch({
+      type: 'initialize',
+      items:  savedItems === null ? [] : JSON.parse(savedItems),
+    })
+  },[]);
+
+  useEffect(() => { // side effect: cache all cart changes
+    if (items !== null) {
+      window.localStorage.setItem(
+        'cart-items',
+        JSON.stringify(items)
+      );
+    }
+  },[items]);
 
   return (
     <>
